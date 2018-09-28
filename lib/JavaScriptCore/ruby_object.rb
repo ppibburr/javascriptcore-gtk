@@ -25,7 +25,7 @@ class JavaScriptCore::RubyObject < JavaScriptCore::Object
   CLASS_DEF = JavaScriptCore::Lib::JSClassDefinition.new
   
   CLASS_DEF[:getProperty] = pr = proc do |ctx,obj,name,err|
-    if (n=JS.read_string(name,false)) == "object_get_property"
+    if (n=JavaScriptCore.read_string(name,false)) == "object_get_property"
       nil
     else
       o=PTRS[obj.address]

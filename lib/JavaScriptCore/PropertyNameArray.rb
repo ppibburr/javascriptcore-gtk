@@ -35,7 +35,7 @@ module JavaScriptCore
     # @return [JavaScriptCore::String] A JavaScriptCore::StringRef containing the property name.
     def get_name_at_index(index)
       res = super(self,index)
-      return JS.read_string(res)
+      return JavaScriptCore.read_string(res)
     end
   end
 end

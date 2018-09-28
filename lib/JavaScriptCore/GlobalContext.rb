@@ -13,10 +13,17 @@ module JavaScriptCore
       
     def self.new *o
       if o[0].is_a? Hash and o[0][:pointer] and o.length == 1
-        real_new o[0][:pointer]
+        c = real_new o[0][:pointer]
       else
-        return JavaScriptCore::GlobalContext.create(*o)
+        c = JavaScriptCore::GlobalContext.create(*o)
       end
+      
+      unless (go=c.get_global_object)[m=:_rb_method_delegate_].is_a?(JavaScriptCore::Object)
+        go[m] = {}
+        go[m][:get] = $_rb_method_delegate_
+      end
+      
+      c
     end
       
 

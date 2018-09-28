@@ -45,7 +45,7 @@ module JavaScriptCore
     # @return [JavaScriptCore::String]           A JavaScriptCore::String that is the same as string.
     def retain()
       res = super(self)
-      return JS.read_string(res)
+      return JavaScriptCore.read_string(res)
     end
 
     #         Releases a JavaScript string.

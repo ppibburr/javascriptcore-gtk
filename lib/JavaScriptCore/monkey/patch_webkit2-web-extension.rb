@@ -10,22 +10,18 @@ module WebKit2WebExtension
     attach_function :webkit_frame_get_javascript_global_context, [:pointer], :pointer
   end
   
-  class WebFrame
+  class Frame
     def javascript_global_context
       ptr = FFILib.webkit_frame_get_javascript_global_context to_ffi
       o = JavaScriptCore::GlobalContext.new pointer: ptr
-      p ptr,o
+
       o
     end;
   
     def execute s, &b    
-      res = nil
-      
-      run_javascript(s) do |_,r|
-        jr  = run_javascript_finish(r)
-        res = jr.value.to_ruby
-        yield(res, jr, jr.global_context) if block_given?
-      end
+      res = JavaScriptCore.execute_script(javascript_global_context, s)
+      b.call res if res
+      res
     end
   end
 end

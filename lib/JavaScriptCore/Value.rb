@@ -207,7 +207,7 @@ module JavaScriptCore
     # @return [JavaScriptCore::String]         A JavaScriptCore::String with the result of conversion, or NULL if an exception is thrown. Ownership follows the Create Rule.
     def to_string_copy(exception = nil)
       res = super(context,self,exception)
-      return JS.read_string(res)
+      return JavaScriptCore.read_string(res)
     end
 
     # Converts a JavaScript value to object and returns the resulting object.

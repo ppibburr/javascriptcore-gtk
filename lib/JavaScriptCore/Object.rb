@@ -98,7 +98,7 @@ module JavaScriptCore
       name = JavaScriptCore::String.create_with_utf8cstring(name)
       body = JavaScriptCore::String.create_with_utf8cstring(body)
       sourceURL = JavaScriptCore::String.create_with_utf8cstring(sourceURL)
-      parameterNames = JS.create_pointer_of_array(JavaScriptCore::String,parameterNames)
+      parameterNames = JavaScriptCore.create_pointer_of_array(JavaScriptCore::String,parameterNames)
       res = super(ctx,name,parameterCount,parameterNames,body,sourceURL,startingLineNumber,exception)
       wrap = self.new(:pointer=>res)
       wrap.context = ctx
@@ -253,7 +253,7 @@ module JavaScriptCore
     # @return [JavaScriptCore::Value] The JavaScriptCore::Value that results from calling object as a function, or NULL if an exception is thrown or object is not a function.
     def call_as_function(thisObject = nil,argumentCount = 0,arguments = nil,exception = nil)
       thisObject = JavaScriptCore::Object.from_ruby(context,thisObject)
-      arguments = JS.create_pointer_of_array(JavaScriptCore::Value,arguments,context)
+      arguments = JavaScriptCore.create_pointer_of_array(JavaScriptCore::Value,arguments,context)
       res = super(context,self,thisObject,argumentCount,arguments,exception)
 
     
@@ -282,7 +282,7 @@ module JavaScriptCore
     # @param [FFI::Pointer] exception A pointer to a JavaScriptCore::ValueRef in which to store an exception, if any. Pass nil if you do not care to store an exception.
     # @return [JavaScriptCore::Object] The JavaScriptCore::Object that results from calling object as a constructor, or NULL if an exception is thrown or object is not a constructor.
     def call_as_constructor(argumentCount = 0,arguments = nil,exception = nil)
-      arguments = JS.create_pointer_of_array(JavaScriptCore::Value,arguments,context)
+      arguments = JavaScriptCore.create_pointer_of_array(JavaScriptCore::Value,arguments,context)
       res = super(context,self,argumentCount,arguments,exception)
       return JavaScriptCore::BaseObject.is_wrapped?(res) || JavaScriptCore::Object.from_pointer_with_context(context,res)
     end

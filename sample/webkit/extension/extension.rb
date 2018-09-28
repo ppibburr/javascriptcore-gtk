@@ -1,8 +1,11 @@
-require 'javascriptcore-gtk'
-
-JavaScriptCore.patch_webkit2_web_extension
+require 'javascriptcore-gtk/extension'
 
 ext = WebKit2WebExtension.default
+
+def c a, &b
+  p :a, a 
+  p b.call(self)
+end
 
 ext.init do |pg|
   ctx = pg.main_frame.javascript_global_context
@@ -12,5 +15,9 @@ ext.init do |pg|
   go = ctx.get_global_object
   
   p go[:foo][:bar]
+  
+  go[:main] = self
+  
+  JavaScriptCore.execute_script(ctx, 'main.c(55, (t) => {return t.p(77);});')
 end
 

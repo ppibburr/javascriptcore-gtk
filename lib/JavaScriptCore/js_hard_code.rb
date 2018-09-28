@@ -45,7 +45,7 @@ class JavaScriptCore::Value
       elsif rv.is_a?(Float)
         make_number(ctx,rv)
       elsif rv.is_a?(JavaScriptCore::Lib::Object)
-        res = JS.execute_script(ctx,"this;",rv)
+        res = JavaScriptCore.execute_script(ctx,"this;",rv)
       elsif rv.is_a?(Hash) || rv.is_a?(Array)
         from_ruby(ctx,JavaScriptCore::Object.new(ctx,rv))
       elsif rv.is_a?(Method) || b || rv.is_a?(Proc)
@@ -60,9 +60,31 @@ class JavaScriptCore::Value
        # JavaScriptCore::Object.from_pointer_with_context ctx,rv
       else
         #raise ConversionError.new("cant make value from #{rv.class}.")
-        from_ruby(ctx,JavaScriptCore::RubyObject.new(ctx,rv))
+        from_ruby(ctx,rv.js_proxy(ctx))
       end
     end
+  end
+end
+
+$_rb_method_delegate_ = proc do |this, t, m|
+  proc do |this_, *oo|
+    bb = oo.pop if oo.last.is_a?(JavaScriptCore::Object) && oo.last.is_function
+  
+    b = proc do |*o|
+      bb.call(*o)
+    end
+  
+    t.object.send m,*oo, &b
+  end
+end
+
+class ::Object
+  def js_proxy ctx
+    ro = JavaScriptCore::RubyObject.new(ctx,self)
+  
+    proxy = JavaScriptCore.execute_script(ctx, 'p = new Proxy(this, _rb_method_delegate_); p;', ro)
+    
+    proxy
   end
 end
 
@@ -108,7 +130,7 @@ class JavaScriptCore::Object
       end
     # make array from ruby array
     elsif rv.is_a?(Array)
-      res = self.make_array(ctx,rv.length,JS.rb_ary2jsvalueref_ary(ctx,rv))
+      res = self.make_array(ctx,rv.length,JavaScriptCore.rb_ary2jsvalueref_ary(ctx,rv))
     elsif rv.is_a?(Method)
       res = self.make_function_with_callback ctx,'' do |*o|
         rv.call(*o)
